@@ -35,7 +35,7 @@
           left: position.left - ($(this).width() / 2),
           top: position.top - ($(this).width()/2)
         }, {
-          duration: ANIMATION_DURATION,
+          duration: ANIMATION_DURATION * 3,
           easing: 'easeInBack',
         });
       });
