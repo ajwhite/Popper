@@ -1,0 +1,11 @@
+{
+  "name": "popper",
+  "version": "1.0.0",
+  "authors": [
+    "Atticus White <contact@atticuswhite.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "~2.1.4"
+  }
+}
