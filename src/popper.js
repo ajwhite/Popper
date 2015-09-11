@@ -1,4 +1,5 @@
 (function ($) {
+  var ANIMATION_DURATION = 150;
 
   function Popper (element) {
     this.element = $(element);
@@ -9,7 +10,7 @@
     this.element.addClass('popper-container');
     this.poppers.addClass('secondary');
     this.primary.addClass('primary');
-    this.hidePoppers();
+    this.hidePoppers(true);
   }
 
   Popper.prototype.getPoppersStartingPosition = function () {
@@ -19,14 +20,26 @@
     };
   };
 
-  Popper.prototype.hidePoppers = function () {
+  Popper.prototype.hidePoppers = function (noAnimation) {
     var position = this.getPoppersStartingPosition();
-    this.poppers.each(function () {
-      $(this).css({
-        left: position.left - ($(this).width() / 2),
-        top: position.top - ($(this).width()/2)
+    if (noAnimation) {
+      this.poppers.each(function () {
+        $(this).css({
+          left: position.left - ($(this).width() / 2),
+          top: position.top - ($(this).height()/2)
+        });
       });
-    });
+    } else {
+      this.poppers.each(function (index) {
+        $(this).stop().delay(index * (ANIMATION_DURATION/3)).animate({
+          left: position.left - ($(this).width() / 2),
+          top: position.top - ($(this).width()/2)
+        }, {
+          duration: ANIMATION_DURATION,
+          easing: 'easeInBack',
+        });
+      });
+    }
     this.element.removeClass('popped');
   };
 
@@ -41,10 +54,20 @@
         angle = 0,
         step = (2 * Math.PI) / this.poppers.length;
 
-    this.poppers.each(function (item, index) {
-      var x = Math.round(32 + radius * Math.cos(angle) - ($(this).width()/2)),
-          y = Math.round(32 + radius * Math.sin(angle) - ($(this).height()/2));
-      $(this).css({left: x + 'px', top: y + 'px'});
+    var position = this.getPoppersStartingPosition();
+    this.poppers.each(function (index) {
+      var width = $(this).width(),
+          height = $(this).height(),
+          x = Math.round(width + radius * Math.cos(angle) - (width/2)),
+          y = Math.round(height + radius * Math.sin(angle) - (height/2));
+
+      $(this).delay(index * (ANIMATION_DURATION / 3)).animate({
+        left: x + 'px',
+        top: y + 'px'
+      }, {
+        duration: ANIMATION_DURATION,
+        easing: 'easeOutBack'
+      });
       angle += step;
     });
   };
