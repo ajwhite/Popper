@@ -54,12 +54,17 @@
         angle = 0,
         step = (2 * Math.PI) / this.poppers.length;
 
-    var position = this.getPoppersStartingPosition();
+    var position = this.getPoppersStartingPosition(),
+        elementW = this.element.width(),
+        elementH = this.element.height();
     this.poppers.each(function (index) {
       var width = $(this).width(),
           height = $(this).height(),
-          x = Math.round(width + radius * Math.cos(angle) - (width/2)),
-          y = Math.round(height + radius * Math.sin(angle) - (height/2));
+          deltaWidth = (elementW / 2) - ($(this).width() / 2),
+          deltaHeight = (elementH / 2) - ($(this).height() / 2),
+          x = Math.round(width + radius * Math.cos(angle) - deltaWidth/2),
+          y = Math.round(height + radius * Math.sin(angle) - deltaHeight/2);
+
 
       $(this).delay(index * (ANIMATION_DURATION / 3)).animate({
         left: x + 'px',
