@@ -101,7 +101,7 @@
   $.fn.popper = function (options) {
     return this.each(function () {
       var popper = new Popper(this, options);
-      $(this).attr('popper', popper);
+      $(this).data('popper', popper);
     });
   };
 })(jQuery);
