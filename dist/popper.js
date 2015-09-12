@@ -8,7 +8,14 @@
       DIRECTION_LEFT = 'left',
       DIRECTION_UP = 'up',
       DIRECTION_DOWN = 'down',
-      STRAIGHT_DIRECTIONS = [DIRECTION_RIGHT, DIRECTION_LEFT, DIRECTION_UP, DIRECTION_DOWN],
+      VERTICAL_DIRECTIONS = [DIRECTION_UP, DIRECTION_DOWN],
+      HORIZONTAL_DIRECTIONS = [DIRECTION_LEFT, DIRECTION_RIGHT],
+      DIRECTION_MAP = {
+        left: 'left',
+        right: 'right',
+        up: 'top',
+        down: 'bottom'
+      },
       DEFAULT_OPTIONS = {
         transitionOutDuration: 450,
         transitionInDuration: 450,
@@ -85,23 +92,23 @@
     var position = this.getPoppersStartingPosition(),
         transition = this.getTransitionRules(),
         positionRules = {},
-        horizontalDirection = STRAIGHT_DIRECTIONS.indexOf(this.options.direction) > -1 ? this.options.direction : DIRECTION_LEFT;
+        verticalDirection = VERTICAL_DIRECTIONS.indexOf(this.options.direction) > -1 ? this.options.direction : DIRECTION_UP;
+        horizontalDirection = HORIZONTAL_DIRECTIONS.indexOf(this.options.direction) > -1 ? this.options.direction : DIRECTION_LEFT;
 
 
     if (animate === false) {
       // if no animation is requested,
       this.poppers.each(function () {
-        positionRules[horizontalDirection] = position.x - ($(this).width() / 2);
-        positionRules.top = position.y - ($(this).height() / 2);
+        positionRules[DIRECTION_MAP[horizontalDirection]] = position.x - ($(this).width() / 2);
+        positionRules[DIRECTION_MAP[verticalDirection]] = position.y - ($(this).height() / 2);
         $(this).css(positionRules);
       });
     } else {
       // cycle through each popper child and transition the node inwards to the center
       // of the primary element
       this.poppers.each(function (index, item) {
-        positionRules[horizontalDirection] = position.x - ($(item).width() / 2);
-        positionRules.top = position.y - ($(item).height() / 2);
-        console.log('index', positionRules);
+        positionRules[DIRECTION_MAP[horizontalDirection]] = position.x - ($(item).width() / 2);
+        positionRules[DIRECTION_MAP[verticalDirection]] = position.y - ($(item).height() / 2);
         $(item).stop().delay(index * transition.transitionInDelay).animate(positionRules, {
           duration: transition.transitionInDuration,
           easing: transition.transitionInEasing,
@@ -128,8 +135,9 @@
 
     if (this.options.direction === DIRECTION_RADIAL) {
       transitionFunction = this.radialTransition.bind(this, transitionRule, elementW, elementH);
-    } else if (STRAIGHT_DIRECTIONS.indexOf(this.options.direction) > -1) {
-      transitionFunction = this.straightTransition.bind(this, transitionRule, this.options.direction, elementW);
+    } else if (VERTICAL_DIRECTIONS.indexOf(this.options.direction) > -1 ||
+              HORIZONTAL_DIRECTIONS.indexOf(this.options.direction) > -1) {
+      transitionFunction = this.straightTransition.bind(this, transitionRule, this.options.direction, elementW, elementH);
     }
     this.poppers.each(transitionFunction);
   };
@@ -158,16 +166,21 @@
   /**
    * Performs a horizontal transition of the elements
    */
-  Popper.prototype.straightTransition = function (transitionRule, direction, elementWidth, index, item) {
+  Popper.prototype.straightTransition = function (transitionRule, direction, elementWidth, elementHeight, index, item) {
     var width = $(item).width(),
+        height = $(item).height(),
         startPosition = this.getPoppersStartingPosition(),
-        resetRule = {left: '', right: ''},
         animationOptions = {};
 
-    resetRule[direction] = startPosition.x;
+    if (HORIZONTAL_DIRECTIONS.indexOf(direction) > -1) {
+      animationOptions[DIRECTION_MAP[direction]] = index * (width + (width / 2)) + elementWidth + (width / 2);
+    } else {
+      animationOptions[DIRECTION_MAP[direction]] = index * (height + (height / 2)) + elementHeight + (height / 2);
+    }
 
-    $(item).css(resetRule);
-    animationOptions[direction] = index * (width + (width / 2)) + elementWidth + (width / 2);
+    // resetRule[direction] = startPosition.x;
+
+    // $(item).css(resetRule);
 
     $(item).delay(index * transitionRule.transitionOutDelay).animate(animationOptions, {
       duration: transitionRule.transitionOutDuration,
