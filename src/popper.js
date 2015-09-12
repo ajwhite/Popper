@@ -139,10 +139,8 @@
         deltaWidth = (elementWidth / 2) - ($(item).width() / 2),
         deltaHeight = (elementHeight / 2) - ($(item).height() / 2),
         angle = index * ((2 * Math.PI) / this.poppers.length),
-        x = Math.round(width + this.options.radius + Math.cos(angle) - deltaWidth / 2),
-        y = Math.round(height + this.options.radius + Math.sin(angle) - deltaHeight / 2);
-
-    console.log('angle', index, angle, x, y);
+        x = Math.round(width + this.options.radius * Math.cos(angle) - deltaWidth / 2),
+        y = Math.round(height + this.options.radius * Math.sin(angle) - deltaHeight / 2);
 
     $(item).delay(index * transitionRule.transitionOutDelay).animate({
       left: x + 'px',
