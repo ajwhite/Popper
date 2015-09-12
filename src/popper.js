@@ -101,7 +101,6 @@
       this.poppers.each(function (index, item) {
         positionRules[horizontalDirection] = position.x - ($(item).width() / 2);
         positionRules.top = position.y - ($(item).height() / 2);
-        console.log('index', positionRules);
         $(item).stop().delay(index * transition.transitionInDelay).animate(positionRules, {
           duration: transition.transitionInDuration,
           easing: transition.transitionInEasing,
