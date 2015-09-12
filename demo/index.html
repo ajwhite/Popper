@@ -129,6 +129,47 @@
         </div>
       </div>
 
+      <div class="row half">
+        <div class="column">
+          <h1>Animation Direction - Vertical Up</h1>
+          <div id="pop-7" class="pop">
+            <a href="#" data-primary></a>
+            <a href="#"></a>
+            <a href="#"></a>
+            <a href="#"></a>
+            <a href="#"></a>
+            <a href="#"></a>
+            <a href="#"></a>
+            <a href="#"></a>
+            <a href="#"></a>
+          </div>
+          <pre>
+            $('#pop-5').popper({
+              direction: 'down'
+            });
+          </pre>
+        </div>
+        <div class="column">
+          <h1>Animation Direction - Verticla Down</h1>
+          <div id="pop-8" class="pop">
+            <a href="#" data-primary></a>
+            <a href="#"></a>
+            <a href="#"></a>
+            <a href="#"></a>
+            <a href="#"></a>
+            <a href="#"></a>
+            <a href="#"></a>
+            <a href="#"></a>
+            <a href="#"></a>
+          </div>
+          <pre>
+            $('#pop-5').popper({
+              direction: 'up'
+            });
+          </pre>
+        </div>
+      </div>
+
 
     <script type="text/javascript">
     $(document).ready(function () {
@@ -149,6 +190,14 @@
       });
       $('#pop-6').popper({
         direction: 'right',
+        transitionOutDelay: 300
+      });
+      $('#pop-7').popper({
+        direction: 'down',
+        transitionOutDelay: 300
+      });
+      $('#pop-8').popper({
+        direction: 'up',
         transitionOutDelay: 300
       });
     });
