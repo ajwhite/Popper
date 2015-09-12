@@ -1,15 +1,25 @@
 (function ($) {
-  var ANIMATION_DURATION = 150;
+  var CONTAINER_CLASS = 'popper-container',
+      SECONDARY_CLASS = 'secondary-popper',
+      PRIMARY_CLASS = 'primary-popper',
+      ACTIVE_CLASS = 'popped',
+      DEFAULT_OPTIONS = {
+        transitionOutDuration: 300,
+        transiationInDuration: 450,
+        transitionOutEasing: 'easeOutBack',
+        transitionInEasing: 'easeInBack'
+      };
 
-  function Popper (element) {
+  function Popper (element, options) {
     this.element = $(element);
     this.primary = this.element.find('[data-primary]');
     this.poppers = this.element.find(':not([data-primary])');
+    this.options = $.extend({}, DEFAULT_OPTIONS, options || {});
 
     this.primary.on('click', this.primaryClicked.bind(this));
-    this.element.addClass('popper-container');
-    this.poppers.addClass('secondary');
-    this.primary.addClass('primary');
+    this.element.addClass(CONTAINER_CLASS);
+    this.poppers.addClass(SECONDARY_CLASS);
+    this.primary.addClass(PRIMARY_CLASS);
     this.hidePoppers(true);
   }
 
@@ -31,20 +41,20 @@
       });
     } else {
       this.poppers.each(function (index) {
-        $(this).stop().delay(index * (ANIMATION_DURATION/3)).animate({
+        $(this).stop().delay(index * (this.options.transitionInDuration/3)).animate({
           left: position.left - ($(this).width() / 2),
           top: position.top - ($(this).width()/2)
         }, {
-          duration: ANIMATION_DURATION * 3,
-          easing: 'easeInBack',
+          duration: this.options.transitionInDuration,
+          easing: this.options.transitionInEasing,
         });
       });
     }
-    this.element.removeClass('popped');
+    this.element.removeClass(ACTIVE_CLASS);
   };
 
   Popper.prototype.showPoppers = function () {
-    this.element.addClass('popped');
+    this.element.addClass(ACTIVE_CLASS);
     this.poppers.show();
     this.positionPoppers();
   };
@@ -66,12 +76,12 @@
           y = Math.round(height + radius * Math.sin(angle) - deltaHeight/2);
 
 
-      $(this).delay(index * (ANIMATION_DURATION / 3)).animate({
+      $(this).delay(index * (this.options.transitionOutDuration / 3)).animate({
         left: x + 'px',
         top: y + 'px'
       }, {
-        duration: ANIMATION_DURATION * 2,
-        easing: 'easeOutBack'
+        duration: this.options.transitionOutDuration,
+        easing: this.options.transitionOutEasing
       });
       angle += step;
     });
@@ -89,7 +99,7 @@
   $.fn.popper = function (options) {
     return this.each(function () {
       var popper = new Popper(this);
-      $(this).attr('popper', popper);
+      $(this).attr('popper', popper, options);
     });
   };
 })(jQuery);
