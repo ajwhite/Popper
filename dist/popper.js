@@ -6,7 +6,9 @@
       DIRECTION_RADIAL = 'radial',
       DIRECTION_RIGHT = 'right',
       DIRECTION_LEFT = 'left',
-      DIRECTIONS = [DIRECTION_RADIAL, DIRECTION_RIGHT, DIRECTION_LEFT],
+      DIRECTION_UP = 'up',
+      DIRECTION_DOWN = 'down',
+      STRAIGHT_DIRECTIONS = [DIRECTION_RIGHT, DIRECTION_LEFT, DIRECTION_UP, DIRECTION_DOWN],
       DEFAULT_OPTIONS = {
         transitionOutDuration: 450,
         transitionInDuration: 450,
@@ -81,24 +83,26 @@
    */
   Popper.prototype.hidePoppers = function (animate) {
     var position = this.getPoppersStartingPosition(),
-        transition = this.getTransitionRules();
+        transition = this.getTransitionRules(),
+        positionRules = {},
+        horizontalDirection = STRAIGHT_DIRECTIONS.indexOf(this.options.direction) > -1 ? this.options.direction : DIRECTION_LEFT;
+
 
     if (animate === false) {
       // if no animation is requested,
       this.poppers.each(function () {
-        $(this).css({
-          left: position.x - ($(this).width() / 2),
-          top: position.y - ($(this).height()/2)
-        });
+        positionRules[horizontalDirection] = position.x - ($(this).width() / 2);
+        positionRules.top = position.y - ($(this).height() / 2);
+        $(this).css(positionRules);
       });
     } else {
       // cycle through each popper child and transition the node inwards to the center
       // of the primary element
       this.poppers.each(function (index, item) {
-        $(item).stop().delay(index * transition.transitionInDelay).animate({
-          left: position.x - ($(item).width() / 2),
-          top: position.y - ($(item).width()/2)
-        }, {
+        positionRules[horizontalDirection] = position.x - ($(item).width() / 2);
+        positionRules.top = position.y - ($(item).height() / 2);
+        console.log('index', positionRules);
+        $(item).stop().delay(index * transition.transitionInDelay).animate(positionRules, {
           duration: transition.transitionInDuration,
           easing: transition.transitionInEasing,
         });
@@ -124,8 +128,8 @@
 
     if (this.options.direction === DIRECTION_RADIAL) {
       transitionFunction = this.radialTransition.bind(this, transitionRule, elementW, elementH);
-    } else if ([DIRECTION_RIGHT, DIRECTION_LEFT].indexOf(this.options.direction) > -1) {
-      transitionFunction = this.horizontalTransition.bind(this, transitionRule, elementW);
+    } else if (STRAIGHT_DIRECTIONS.indexOf(this.options.direction) > -1) {
+      transitionFunction = this.straightTransition.bind(this, transitionRule, this.options.direction, elementW);
     }
     this.poppers.each(transitionFunction);
   };
@@ -154,12 +158,18 @@
   /**
    * Performs a horizontal transition of the elements
    */
-  Popper.prototype.horizontalTransition = function (transitionRule, elementWidth, index, item) {
-    var width = $(item).width();
+  Popper.prototype.straightTransition = function (transitionRule, direction, elementWidth, index, item) {
+    var width = $(item).width(),
+        startPosition = this.getPoppersStartingPosition(),
+        resetRule = {left: '', right: ''},
+        animationOptions = {};
 
-    $(item).delay(index * transitionRule.transitionOutDelay).animate({
-      left: index * (width + (width / 2)) + elementWidth + (width / 2)
-    }, {
+    resetRule[direction] = startPosition.x;
+
+    $(item).css(resetRule);
+    animationOptions[direction] = index * (width + (width / 2)) + elementWidth + (width / 2);
+
+    $(item).delay(index * transitionRule.transitionOutDelay).animate(animationOptions, {
       duration: transitionRule.transitionOutDuration,
       easing: transitionRule.transitionOutEasing
     });
