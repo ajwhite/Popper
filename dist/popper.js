@@ -4,12 +4,30 @@
       PRIMARY_CLASS = 'primary-popper',
       ACTIVE_CLASS = 'popped',
       DEFAULT_OPTIONS = {
-        transitionOutDuration: 300,
+        transitionOutDuration: 450,
         transitionInDuration: 450,
         transitionOutDelay: 50,
         transitionInDelay: 50,
         transitionOutEasing: 'easeOutBack',
         transitionInEasing: 'easeInBack'
+      },
+      ANIMATION_PRESETS = {
+        spiral: {
+          transitionOutDuration: 450,
+          transitionInDuration: 450,
+          transitionOutDelay: 50,
+          transitionInDelay: 50,
+          transitionOutEasing: 'easeOutBack',
+          transitionInEasing: 'easeInBack'
+        },
+        pop: {
+          transitionOutDuration: 450,
+          transitionInDuration: 450,
+          transitionOutDelay: 0,
+          transitionInDelay: 0,
+          transitionOutEasing: 'easeOutBack',
+          transitionInEasing: 'easeInBack'
+        }
       };
 
   function Popper (element, options) {
@@ -32,8 +50,18 @@
     };
   };
 
+  Popper.prototype.getTransitionRules = function () {
+    if (this.options.animation && this.options.animation in ANIMATION_PRESETS) {
+      return ANIMATION_PRESETS[this.options.animation];
+    } else {
+      return this.options;
+    }
+  };
+
   Popper.prototype.hidePoppers = function (noAnimation) {
-    var position = this.getPoppersStartingPosition();
+    var position = this.getPoppersStartingPosition(),
+        transition = this.getTransitionRules();
+
     if (noAnimation) {
       this.poppers.each(function () {
         $(this).css({
@@ -43,12 +71,12 @@
       });
     } else {
       this.poppers.each(function (index, item) {
-        $(item).stop().delay(index * this.options.transitionInDelay).animate({
+        $(item).stop().delay(index * transition.transitionInDelay).animate({
           left: position.left - ($(item).width() / 2),
           top: position.top - ($(item).width()/2)
         }, {
-          duration: this.options.transitionInDuration,
-          easing: this.options.transitionInEasing,
+          duration: transition.transitionInDuration,
+          easing: transition.transitionInEasing,
         });
       }.bind(this));
     }
@@ -64,11 +92,12 @@
   Popper.prototype.positionPoppers = function () {
     var radius = 100,
         angle = 0,
-        step = (2 * Math.PI) / this.poppers.length;
-
-    var position = this.getPoppersStartingPosition(),
+        step = (2 * Math.PI) / this.poppers.length,
+        transition = this.getTransitionRules(),
+        position = this.getPoppersStartingPosition(),
         elementW = this.element.width(),
         elementH = this.element.height();
+
     this.poppers.each(function (index, item) {
       var width = $(item).width(),
           height = $(item).height(),
@@ -78,12 +107,12 @@
           y = Math.round(height + radius * Math.sin(angle) - deltaHeight/2);
 
 
-      $(item).delay(index * this.options.transitionOutDelay).animate({
+      $(item).delay(index * transition.transitionOutDelay).animate({
         left: x + 'px',
         top: y + 'px'
       }, {
-        duration: this.options.transitionOutDuration,
-        easing: this.options.transitionOutEasing
+        duration: transition.transitionOutDuration,
+        easing: transition.transitionOutEasing
       });
       angle += step;
     }.bind(this));
@@ -95,6 +124,7 @@
     } else {
       this.showPoppers();
     }
+    return false;
   };
 
 
