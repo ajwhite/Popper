@@ -88,6 +88,29 @@
         </div>
       </div>
 
+      <div class="row half">
+        <div class="column">
+          <h1>Animation Direction - Horizontal</h1>
+          <div id="pop-5" class="pop">
+            <a href="#" data-primary></a>
+            <a href="#"></a>
+            <a href="#"></a>
+            <a href="#"></a>
+            <a href="#"></a>
+            <a href="#"></a>
+            <a href="#"></a>
+            <a href="#"></a>
+            <a href="#"></a>
+          </div>
+          <pre>
+            $('#pop-5').popper({
+              direction: 'right'
+            });
+          </pre>
+        </div>
+      </div>
+
+
     <script type="text/javascript">
     $(document).ready(function () {
       $('#pop-1').popper();
@@ -100,6 +123,10 @@
       });
       $('#pop-4').popper({
         animation: 'pop'
+      });
+      $('#pop-5').popper({
+        direction: 'right',
+        transitionOutDelay: 300
       });
     });
     </script>

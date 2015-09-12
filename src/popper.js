@@ -123,9 +123,9 @@
     this.poppers.show();
 
     if (this.options.direction === DIRECTION_RADIAL) {
-      transitionFunction = this.radialTransition.bind(this, transitionRule, elementW, elementH)
+      transitionFunction = this.radialTransition.bind(this, transitionRule, elementW, elementH);
     } else if ([DIRECTION_RIGHT, DIRECTION_LEFT].indexOf(this.options.direction) > -1) {
-      transitionFunction = this.horizontalTransition.bind(this, transitionRule);
+      transitionFunction = this.horizontalTransition.bind(this, transitionRule, elementW);
     }
     this.poppers.each(transitionFunction);
   };
@@ -154,8 +154,15 @@
   /**
    * Performs a horizontal transition of the elements
    */
-  Popper.prototype.horizontalTransition = function () {
+  Popper.prototype.horizontalTransition = function (transitionRule, elementWidth, index, item) {
+    var width = $(item).width();
 
+    $(item).delay(index * transitionRule.transitionOutDelay).animate({
+      left: index * (width + (width / 2)) + elementWidth + (width / 2)
+    }, {
+      duration: transitionRule.transitionOutDuration,
+      easing: transitionRule.transitionOutEasing
+    });
   };
 
   /**
