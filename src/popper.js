@@ -40,7 +40,7 @@
     this.element.addClass(CONTAINER_CLASS);
     this.poppers.addClass(SECONDARY_CLASS);
     this.primary.addClass(PRIMARY_CLASS);
-    this.hidePoppers(true);
+    this.hidePoppers(false);
   }
 
   /**
@@ -54,6 +54,10 @@
     };
   };
 
+  /**
+   * Gets the transition rules based on a preset animation or a custom defined ruleset
+   * @return {Object} The animation rules
+   */
   Popper.prototype.getTransitionRules = function () {
     if (this.options.animation && this.options.animation in ANIMATION_PRESETS) {
       return ANIMATION_PRESETS[this.options.animation];
@@ -62,11 +66,16 @@
     }
   };
 
-  Popper.prototype.hidePoppers = function (noAnimation) {
+  /**
+   * Hide the popout children by transitioning the nodes to the center of the primary element
+   * @param  {Boolean} noAnimation Prevent the transition and immediately hide
+   */
+  Popper.prototype.hidePoppers = function (animate) {
     var position = this.getPoppersStartingPosition(),
         transition = this.getTransitionRules();
 
-    if (noAnimation) {
+    if (animate === false) {
+      // if no animation is requested,
       this.poppers.each(function () {
         $(this).css({
           left: position.x - ($(this).width() / 2),
@@ -74,6 +83,8 @@
         });
       });
     } else {
+      // cycle through each popper child and transition the node inwards to the center
+      // of the primary element
       this.poppers.each(function (index, item) {
         $(item).stop().delay(index * transition.transitionInDelay).animate({
           left: position.x - ($(item).width() / 2),
@@ -87,13 +98,10 @@
     this.element.removeClass(ACTIVE_CLASS);
   };
 
+  /**
+   * Show the popout children by transitioning them from the center of the primary element in an outward radial
+   */
   Popper.prototype.showPoppers = function () {
-    this.element.addClass(ACTIVE_CLASS);
-    this.poppers.show();
-    this.positionPoppers();
-  };
-
-  Popper.prototype.positionPoppers = function () {
     var radius = 100,
         angle = 0,
         step = (2 * Math.PI) / this.poppers.length,
@@ -101,6 +109,8 @@
         elementW = this.element.width(),
         elementH = this.element.height();
 
+    this.element.addClass(ACTIVE_CLASS);
+    this.poppers.show();
     this.poppers.each(function (index, item) {
       var width = $(item).width(),
           height = $(item).height(),
@@ -121,6 +131,10 @@
     }.bind(this));
   };
 
+  /**
+   * Handle the click event of the primary element by either hiding the children or showing them
+   * based on the current state
+   */
   Popper.prototype.primaryClicked = function () {
     if (this.element.hasClass('popped')) {
       this.hidePoppers();
