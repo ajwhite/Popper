@@ -5,7 +5,9 @@
       ACTIVE_CLASS = 'popped',
       DEFAULT_OPTIONS = {
         transitionOutDuration: 300,
-        transiationInDuration: 450,
+        transitionInDuration: 450,
+        transitionOutDelay: 50,
+        transitionInDelay: 50,
         transitionOutEasing: 'easeOutBack',
         transitionInEasing: 'easeInBack'
       };
@@ -40,15 +42,15 @@
         });
       });
     } else {
-      this.poppers.each(function (index) {
-        $(this).stop().delay(index * (this.options.transitionInDuration/3)).animate({
-          left: position.left - ($(this).width() / 2),
-          top: position.top - ($(this).width()/2)
+      this.poppers.each(function (index, item) {
+        $(item).stop().delay(index * this.options.transitionInDelay).animate({
+          left: position.left - ($(item).width() / 2),
+          top: position.top - ($(item).width()/2)
         }, {
           duration: this.options.transitionInDuration,
           easing: this.options.transitionInEasing,
         });
-      });
+      }.bind(this));
     }
     this.element.removeClass(ACTIVE_CLASS);
   };
@@ -67,16 +69,16 @@
     var position = this.getPoppersStartingPosition(),
         elementW = this.element.width(),
         elementH = this.element.height();
-    this.poppers.each(function (index) {
-      var width = $(this).width(),
-          height = $(this).height(),
-          deltaWidth = (elementW / 2) - ($(this).width() / 2),
-          deltaHeight = (elementH / 2) - ($(this).height() / 2),
+    this.poppers.each(function (index, item) {
+      var width = $(item).width(),
+          height = $(item).height(),
+          deltaWidth = (elementW / 2) - ($(item).width() / 2),
+          deltaHeight = (elementH / 2) - ($(item).height() / 2),
           x = Math.round(width + radius * Math.cos(angle) - deltaWidth/2),
           y = Math.round(height + radius * Math.sin(angle) - deltaHeight/2);
 
 
-      $(this).delay(index * (this.options.transitionOutDuration / 3)).animate({
+      $(item).delay(index * this.options.transitionOutDelay).animate({
         left: x + 'px',
         top: y + 'px'
       }, {
@@ -84,7 +86,7 @@
         easing: this.options.transitionOutEasing
       });
       angle += step;
-    });
+    }.bind(this));
   };
 
   Popper.prototype.primaryClicked = function () {
@@ -98,8 +100,8 @@
 
   $.fn.popper = function (options) {
     return this.each(function () {
-      var popper = new Popper(this);
-      $(this).attr('popper', popper, options);
+      var popper = new Popper(this, options);
+      $(this).attr('popper', popper);
     });
   };
 })(jQuery);
