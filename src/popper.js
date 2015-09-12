@@ -70,7 +70,7 @@
         left: x + 'px',
         top: y + 'px'
       }, {
-        duration: ANIMATION_DURATION,
+        duration: ANIMATION_DURATION * 2,
         easing: 'easeOutBack'
       });
       angle += step;
