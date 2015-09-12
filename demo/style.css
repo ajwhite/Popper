@@ -5,7 +5,7 @@
   height: 75px;
 }
 
-#pop .primary {
+#pop .primary-popper {
   background-image: url(https://vox.space/files/jquery/classysocial/images/share_core_square.jpg);
   background-size: contain;
   border-radius: 50%;
@@ -15,7 +15,7 @@
   display: block;
 }
 
-#pop .secondary {
+#pop .secondary-popper {
   background-image: url(https://vox.space/files/jquery/classysocial/images/default/twitter.png);
   background-size: contain;
   height: 32px;
