@@ -3,13 +3,20 @@
       SECONDARY_CLASS = 'secondary-popper',
       PRIMARY_CLASS = 'primary-popper',
       ACTIVE_CLASS = 'popped',
+      DIRECTION_RADIAL = 'radial',
+      DIRECTION_RIGHT = 'right',
+      DIRECTION_LEFT = 'left',
+      DIRECTIONS = [DIRECTION_RADIAL, DIRECTION_RIGHT, DIRECTION_LEFT],
       DEFAULT_OPTIONS = {
         transitionOutDuration: 450,
         transitionInDuration: 450,
         transitionOutDelay: 50,
         transitionInDelay: 50,
         transitionOutEasing: 'easeOutBack',
-        transitionInEasing: 'easeInBack'
+        transitionInEasing: 'easeInBack',
+        animation: null,
+        direction: DIRECTION_RADIAL,
+        radius: 100
       },
       ANIMATION_PRESETS = {
         spiral: {
@@ -18,7 +25,8 @@
           transitionOutDelay: 50,
           transitionInDelay: 50,
           transitionOutEasing: 'easeOutBack',
-          transitionInEasing: 'easeInBack'
+          transitionInEasing: 'easeInBack',
+          direction: DIRECTION_RADIAL
         },
         pop: {
           transitionOutDuration: 450,
@@ -26,7 +34,8 @@
           transitionOutDelay: 0,
           transitionInDelay: 0,
           transitionOutEasing: 'easeOutBack',
-          transitionInEasing: 'easeInBack'
+          transitionInEasing: 'easeInBack',
+          direction: DIRECTION_RADIAL
         }
       };
 
@@ -105,30 +114,55 @@
     var radius = 100,
         angle = 0,
         step = (2 * Math.PI) / this.poppers.length,
-        transition = this.getTransitionRules(),
+        transitionRule = this.getTransitionRules(),
         elementW = this.element.width(),
-        elementH = this.element.height();
+        elementH = this.element.height(),
+        transitionFunction;
 
     this.element.addClass(ACTIVE_CLASS);
     this.poppers.show();
-    this.poppers.each(function (index, item) {
-      var width = $(item).width(),
-          height = $(item).height(),
-          deltaWidth = (elementW / 2) - ($(item).width() / 2),
-          deltaHeight = (elementH / 2) - ($(item).height() / 2),
-          x = Math.round(width + radius * Math.cos(angle) - deltaWidth/2),
-          y = Math.round(height + radius * Math.sin(angle) - deltaHeight/2);
 
+    if (this.options.direction === DIRECTION_RADIAL) {
+      transitionFunction = this.radialTransition.bind(this, transitionRule, elementW, elementH);
+    } else if ([DIRECTION_RIGHT, DIRECTION_LEFT].indexOf(this.options.direction) > -1) {
+      transitionFunction = this.horizontalTransition.bind(this, transitionRule, elementW);
+    }
+    this.poppers.each(transitionFunction);
+  };
 
-      $(item).delay(index * transition.transitionOutDelay).animate({
-        left: x + 'px',
-        top: y + 'px'
-      }, {
-        duration: transition.transitionOutDuration,
-        easing: transition.transitionOutEasing
-      });
-      angle += step;
-    }.bind(this));
+  /**
+   * Performs a radial transition of the child elements
+   */
+  Popper.prototype.radialTransition = function (transitionRule, elementWidth, elementHeight, index, item) {
+    var width = $(item).width(),
+        height = $(item).height(),
+        deltaWidth = (elementWidth / 2) - ($(item).width() / 2),
+        deltaHeight = (elementHeight / 2) - ($(item).height() / 2),
+        angle = index * ((2 * Math.PI) / this.poppers.length),
+        x = Math.round(width + this.options.radius * Math.cos(angle) - deltaWidth / 2),
+        y = Math.round(height + this.options.radius * Math.sin(angle) - deltaHeight / 2);
+
+    $(item).delay(index * transitionRule.transitionOutDelay).animate({
+      left: x + 'px',
+      top: y + 'px'
+    }, {
+      duration: transitionRule.transitionOutDuration,
+      easing: transitionRule.transitionOutEasing
+    });
+  };
+
+  /**
+   * Performs a horizontal transition of the elements
+   */
+  Popper.prototype.horizontalTransition = function (transitionRule, elementWidth, index, item) {
+    var width = $(item).width();
+
+    $(item).delay(index * transitionRule.transitionOutDelay).animate({
+      left: index * (width + (width / 2)) + elementWidth + (width / 2)
+    }, {
+      duration: transitionRule.transitionOutDuration,
+      easing: transitionRule.transitionOutEasing
+    });
   };
 
   /**
@@ -143,7 +177,6 @@
     }
     return false;
   };
-
 
   $.fn.popper = function (options) {
     return this.each(function () {
