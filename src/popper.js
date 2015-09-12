@@ -43,10 +43,14 @@
     this.hidePoppers(true);
   }
 
+  /**
+   * Finds the center point of the primary element relative to the containing element
+   * @return {Object} Coordinates of the primary element's center position
+   */
   Popper.prototype.getPoppersStartingPosition = function () {
     return {
-      left: Math.abs(this.primary.position().left + (this.primary.width()/2)),
-      top: Math.abs(this.primary.position().top + (this.primary.height()/2))
+      x: Math.abs(this.primary.position().left + (this.primary.width()/2)),
+      y: Math.abs(this.primary.position().top + (this.primary.height()/2))
     };
   };
 
@@ -65,15 +69,15 @@
     if (noAnimation) {
       this.poppers.each(function () {
         $(this).css({
-          left: position.left - ($(this).width() / 2),
-          top: position.top - ($(this).height()/2)
+          left: position.x - ($(this).width() / 2),
+          top: position.y - ($(this).height()/2)
         });
       });
     } else {
       this.poppers.each(function (index, item) {
         $(item).stop().delay(index * transition.transitionInDelay).animate({
-          left: position.left - ($(item).width() / 2),
-          top: position.top - ($(item).width()/2)
+          left: position.x - ($(item).width() / 2),
+          top: position.y - ($(item).width()/2)
         }, {
           duration: transition.transitionInDuration,
           easing: transition.transitionInEasing,
@@ -94,7 +98,6 @@
         angle = 0,
         step = (2 * Math.PI) / this.poppers.length,
         transition = this.getTransitionRules(),
-        position = this.getPoppersStartingPosition(),
         elementW = this.element.width(),
         elementH = this.element.height();
 
