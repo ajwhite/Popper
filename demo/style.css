@@ -1,11 +1,12 @@
-#pop {
-  margin: 300px auto;
+.pop {
+  margin: 150px auto;
   display: block;
   width: 75px;
   height: 75px;
 }
+h1 { text-align: center; }
 
-#pop .primary {
+.pop .primary-popper {
   background-image: url(https://vox.space/files/jquery/classysocial/images/share_core_square.jpg);
   background-size: contain;
   border-radius: 50%;
@@ -15,10 +16,20 @@
   display: block;
 }
 
-#pop .secondary {
+.pop .secondary-popper {
   background-image: url(https://vox.space/files/jquery/classysocial/images/default/twitter.png);
   background-size: contain;
   height: 32px;
   width: 32px;
   display: block;
+}
+
+.row:after {
+  display: table;
+  clear: both;
+  content: ' ';
+}
+.row.half .column {
+  float: left;
+  width: 50%;
 }

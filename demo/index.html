@@ -7,20 +7,53 @@
     <script type="text/javascript" src="../dist/popper.js"></script>
   </head>
   <body>
-    <div id="pop">
-      <a href="#" data-primary></a>
-      <a href="#"></a>
-      <a href="#"></a>
-      <a href="#"></a>
-      <a href="#"></a>
-      <a href="#"></a>
-      <a href="#"></a>
-      <a href="#"></a>
-      <a href="#"></a>
+    <div class="row half">
+      <div class="column">
+        <h1>Standard Pop</h1>
+        <div id="pop-1" class="pop">
+          <a href="#" data-primary></a>
+          <a href="#"></a>
+          <a href="#"></a>
+          <a href="#"></a>
+          <a href="#"></a>
+          <a href="#"></a>
+          <a href="#"></a>
+          <a href="#"></a>
+          <a href="#"></a>
+        </div>
+        <pre>
+          $('#pop-1').popper();
+        </pre>
+      </div>
+      <div class="column">
+        <h1>Alternative 1</h1>
+        <div id="pop-2" class="pop">
+          <a href="#" data-primary></a>
+          <a href="#"></a>
+          <a href="#"></a>
+          <a href="#"></a>
+          <a href="#"></a>
+          <a href="#"></a>
+          <a href="#"></a>
+          <a href="#"></a>
+          <a href="#"></a>
+        </div>
+        <pre>
+          $('#pop-2').popper({
+            transitionInDelay: 0,
+            transitionOutDelay: 0
+          });
+        </pre>
+      </div>
     </div>
+
     <script type="text/javascript">
     $(document).ready(function () {
-      $('#pop').popper();
+      $('#pop-1').popper();
+      $('#pop-2').popper({
+        transitionInDelay: 0,
+        transitionOutDelay: 0
+      });
     });
     </script>
   </body>

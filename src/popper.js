@@ -1,15 +1,27 @@
 (function ($) {
-  var ANIMATION_DURATION = 150;
+  var CONTAINER_CLASS = 'popper-container',
+      SECONDARY_CLASS = 'secondary-popper',
+      PRIMARY_CLASS = 'primary-popper',
+      ACTIVE_CLASS = 'popped',
+      DEFAULT_OPTIONS = {
+        transitionOutDuration: 300,
+        transitionInDuration: 450,
+        transitionOutDelay: 50,
+        transitionInDelay: 50,
+        transitionOutEasing: 'easeOutBack',
+        transitionInEasing: 'easeInBack'
+      };
 
-  function Popper (element) {
+  function Popper (element, options) {
     this.element = $(element);
     this.primary = this.element.find('[data-primary]');
     this.poppers = this.element.find(':not([data-primary])');
+    this.options = $.extend({}, DEFAULT_OPTIONS, options || {});
 
     this.primary.on('click', this.primaryClicked.bind(this));
-    this.element.addClass('popper-container');
-    this.poppers.addClass('secondary');
-    this.primary.addClass('primary');
+    this.element.addClass(CONTAINER_CLASS);
+    this.poppers.addClass(SECONDARY_CLASS);
+    this.primary.addClass(PRIMARY_CLASS);
     this.hidePoppers(true);
   }
 
@@ -30,21 +42,21 @@
         });
       });
     } else {
-      this.poppers.each(function (index) {
-        $(this).stop().delay(index * (ANIMATION_DURATION/3)).animate({
-          left: position.left - ($(this).width() / 2),
-          top: position.top - ($(this).width()/2)
+      this.poppers.each(function (index, item) {
+        $(item).stop().delay(index * this.options.transitionInDelay).animate({
+          left: position.left - ($(item).width() / 2),
+          top: position.top - ($(item).width()/2)
         }, {
-          duration: ANIMATION_DURATION * 3,
-          easing: 'easeInBack',
+          duration: this.options.transitionInDuration,
+          easing: this.options.transitionInEasing,
         });
-      });
+      }.bind(this));
     }
-    this.element.removeClass('popped');
+    this.element.removeClass(ACTIVE_CLASS);
   };
 
   Popper.prototype.showPoppers = function () {
-    this.element.addClass('popped');
+    this.element.addClass(ACTIVE_CLASS);
     this.poppers.show();
     this.positionPoppers();
   };
@@ -57,24 +69,24 @@
     var position = this.getPoppersStartingPosition(),
         elementW = this.element.width(),
         elementH = this.element.height();
-    this.poppers.each(function (index) {
-      var width = $(this).width(),
-          height = $(this).height(),
-          deltaWidth = (elementW / 2) - ($(this).width() / 2),
-          deltaHeight = (elementH / 2) - ($(this).height() / 2),
+    this.poppers.each(function (index, item) {
+      var width = $(item).width(),
+          height = $(item).height(),
+          deltaWidth = (elementW / 2) - ($(item).width() / 2),
+          deltaHeight = (elementH / 2) - ($(item).height() / 2),
           x = Math.round(width + radius * Math.cos(angle) - deltaWidth/2),
           y = Math.round(height + radius * Math.sin(angle) - deltaHeight/2);
 
 
-      $(this).delay(index * (ANIMATION_DURATION / 3)).animate({
+      $(item).delay(index * this.options.transitionOutDelay).animate({
         left: x + 'px',
         top: y + 'px'
       }, {
-        duration: ANIMATION_DURATION * 2,
-        easing: 'easeOutBack'
+        duration: this.options.transitionOutDuration,
+        easing: this.options.transitionOutEasing
       });
       angle += step;
-    });
+    }.bind(this));
   };
 
   Popper.prototype.primaryClicked = function () {
@@ -88,7 +100,7 @@
 
   $.fn.popper = function (options) {
     return this.each(function () {
-      var popper = new Popper(this);
+      var popper = new Popper(this, options);
       $(this).attr('popper', popper);
     });
   };
